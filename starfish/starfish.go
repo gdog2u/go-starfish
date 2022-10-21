@@ -4,6 +4,7 @@ package starfish
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"math/rand"
 	"os"
 	"strings"
@@ -325,7 +326,7 @@ func (cB *CodeBox) Exe(r byte) (string, bool) {
 	case '%':
 		x := cB.Pop()
 		y := cB.Pop()
-		cB.Push(float64(int64(y) % int64(x)))
+		cB.Push(math.Mod(y, x))
 	case '=':
 		if cB.Pop() == cB.Pop() {
 			cB.Push(1)
