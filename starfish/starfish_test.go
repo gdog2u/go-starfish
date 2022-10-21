@@ -24,7 +24,7 @@ var (
 func runscript(script string, initialstack []float64, compMode bool) *CodeBox {
 	cB := NewCodeBox(script, initialstack, compMode)
 	now := time.Now()
-	for !cB.Swim() {
+	for _, err := cB.Swim(); err; {
 		if time.Since(now) >= time.Second {
 			log.Fatalln("script taking too long...")
 		}
@@ -39,7 +39,7 @@ func BenchmarkScript(b *testing.B) {
 		copy(stack, INITIALSTACK)
 		cB := NewCodeBox(SCRIPT, stack, false)
 		b.StartTimer()
-		for !cB.Swim() {
+		for _, err := cB.Swim(); err; {
 		}
 	}
 	log.Println(b.N)
@@ -161,35 +161,41 @@ func TestStackReturn(t *testing.T) {
 func TestMovement(t *testing.T) {
 	cB := NewCodeBox(">;", []float64{}, false)
 	cB.Swim()
-	if !cB.Swim() {
+	if _, err := cB.Swim(); !err {
+		t.Log("Swim right failed")
 		t.Fail()
 	}
 
 	cB = NewCodeBox("<;", []float64{}, false)
 	cB.Swim()
-	if !cB.Swim() {
+	if _, err := cB.Swim(); !err {
+		t.Log("Swim left failed")
 		t.Fail()
 	}
 
 	cB = NewCodeBox("^\n;", []float64{}, false)
 	cB.Swim()
-	if !cB.Swim() {
+	if _, err := cB.Swim(); !err {
+		t.Log("Swim up failed")
 		t.Fail()
 	}
 
 	cB = NewCodeBox("v\n;", []float64{}, false)
 	cB.Swim()
-	if !cB.Swim() {
+	if _, err := cB.Swim(); !err {
+		t.Log("Swim down failed")
 		t.Fail()
 	}
 
 	cB = NewCodeBox("`;\n`", []float64{}, false)
 	for i := 0; i < 5; i++ {
-		if cB.Swim() {
+		if _, err := cB.Swim(); err {
+			t.Log("Fisherman failed")
 			t.Fail()
 		}
 	}
-	if !cB.Swim() {
+	if _, err := cB.Swim(); !err {
+		t.Log("Fisherman failed")
 		t.Fail()
 	}
 }
