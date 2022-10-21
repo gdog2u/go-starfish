@@ -11,6 +11,7 @@ const (
 	TESTVALUE2 = 2
 	TESTVALUE3 = 3
 	TESTVALUE4 = 4
+	TESTVALUE5 = 5.7777777777
 	SCRIPT     = `r>l5(?v~~~/:!|Ou+1Ox:@=?~~~~~~~!
 ~~l5(?v" "/
  ~;!?l<`  // Script used in "BenchmarkScript"
@@ -197,5 +198,29 @@ func TestMovement(t *testing.T) {
 	if _, err := cB.Swim(); !err {
 		t.Log("Fisherman failed")
 		t.Fail()
+	}
+}
+func TestModulusIntegers(t *testing.T) {
+	cB := runscript("%;", []float64{TESTVALUE4, TESTVALUE3}, false)
+	s := cB.stacks[0]
+	if len(s.S) != 1 || s.S[0] != 1 {
+		t.FailNow()
+	}
+	cB = runscript("%;", []float64{TESTVALUE4, TESTVALUE2}, false)
+	s = cB.stacks[0]
+	if len(s.S) != 1 || s.S[0] != 0 {
+		t.FailNow()
+	}
+}
+
+func TestModulusFloats(t *testing.T) {
+	cB := runscript("%;", []float64{TESTVALUE5, TESTVALUE1}, false)
+	s := cB.stacks[0]
+	var expected float64 = 0.7777777776999999
+	if len(s.S) != 1 || s.S[0] != expected {
+		t.Logf("expected == actual: %t", s.S[0] == expected)
+		t.Logf("expected: %.7f\nGot: %.7f", expected, s.S[0])
+		t.Logf("len(s.S) == 1: %t", len(s.S) == 1)
+		t.FailNow()
 	}
 }
